@@ -52,6 +52,16 @@ public class MainActivity extends Activity {
     private boolean isConnected;
     /** BT end
      */
+
+    /**
+     * experiment begin
+     */
+    private Button m_startBtn;
+    private Button m_continueBtn;
+    /**
+     * experiment end
+     */
+
     private MainView m_mainView;
 
     Handler timerHandler = new Handler();
@@ -78,7 +88,7 @@ public class MainActivity extends Activity {
         m_userName = bundle.getString("user");
         m_userId = bundle.getString("id");
 
-        setTitle(m_userId+" : "+m_userName);
+        setTitle(m_userId + " : " + m_userName);
 
         /**
          * BT begin
@@ -87,16 +97,14 @@ public class MainActivity extends Activity {
         /**
          * BT end
          */
-        m_mainView = new MainView(this);
-        this.addContentView(m_mainView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
-
-        Button btn = new Button(this);
-        btn.setText("Add Ball");
-        btn.setOnClickListener(new View.OnClickListener() {
+        m_startBtn = new Button(this);
+        m_startBtn.setText("Start");
+        m_startBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (m_mainView != null && m_mainView.getBallCount() == 0)
-                    m_mainView.addBall();
+                if (m_mainView != null && m_mainView.getBallCount() == 0) {
+                    m_mainView.startBlock();
+                }
             }
         });
 
@@ -104,9 +112,42 @@ public class MainActivity extends Activity {
 
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-        relativeLayout.addView(btn, layoutParams);
+        relativeLayout.addView(m_startBtn, layoutParams);
+
+        setStartButtonEnabled(false);
+
+        m_mainView = new MainView(this);
+
+        this.addContentView(m_mainView, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
 
         this.addContentView(relativeLayout, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+        /**
+         * experiment begin
+         */
+        m_continueBtn = new Button(this);
+        m_continueBtn.setText("Continue");
+        m_continueBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (m_mainView != null && m_mainView.getBallCount() == 0)
+                    m_mainView.nextBlock();
+            }
+        });
+
+        RelativeLayout relativeLayout_con = new RelativeLayout(this);
+
+        RelativeLayout.LayoutParams layoutParams_con = new RelativeLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams_con.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        layoutParams_con.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        relativeLayout_con.addView(m_continueBtn, layoutParams_con);
+
+        setContinueButtonEnabled(false);
+
+        this.addContentView(relativeLayout_con, new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        /**
+         * experiment end
+         */
 
         timerHandler.postDelayed(timerRunnable, 0);
     }
@@ -132,6 +173,21 @@ public class MainActivity extends Activity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    /**
+     * experiment begin
+     */
+    public void setStartButtonEnabled(boolean enabled) {
+        m_startBtn.setEnabled(enabled);
+    }
+
+    public void setContinueButtonEnabled(boolean enabled) {
+        m_continueBtn.setEnabled(enabled);
+    }
+
+    /**
+     * experiment end
+     */
 
     /**
      * BT begin
