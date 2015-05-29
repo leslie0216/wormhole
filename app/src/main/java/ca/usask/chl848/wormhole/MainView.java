@@ -80,8 +80,6 @@ public class MainView extends View {
      */
 
     private ArrayList<String> m_ballNames;
-    private int m_blockId;
-    private int m_trialId;
     private long m_trailStartTime;
     private int m_numberOfDrops;
     private int m_numberOfErrors;
@@ -229,6 +227,9 @@ public class MainView extends View {
                 m_paint.setStyle(Paint.Style.FILL_AND_STROKE);
                 canvas.drawCircle(ball.m_ballX, ball.m_ballY, m_ballRadius, m_paint);
 
+                /**
+                 * experiment begin
+                 */
                 m_paint.setStrokeWidth(2);
                 float textX = ball.m_ballX - m_ballRadius;
                 float textY = ball.m_ballY - m_ballRadius;
@@ -236,6 +237,9 @@ public class MainView extends View {
                     textX = ball.m_ballX - m_ballRadius * 2.0f;
                 }
                 canvas.drawText(ball.m_name, textX, textY, m_paint);
+                /**
+                 * experiment end
+                 */
             }
         }
     }
@@ -267,9 +271,15 @@ public class MainView extends View {
 
             m_remotePhones.add(info);
 
+            /**
+             * experiment end
+             */
             if (m_remotePhones.size() == 3) {
                 initExperiment();
             }
+            /**
+             * experiment end
+             */
         }
     }
 
