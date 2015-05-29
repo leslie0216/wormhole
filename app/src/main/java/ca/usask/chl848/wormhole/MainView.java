@@ -610,7 +610,12 @@ public class MainView extends View {
 
         resetBlock();
 
-        ((MainActivity) getContext()).setStartButtonEnabled(true);
+        ((MainActivity)getContext()).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ((MainActivity) getContext()).setStartButtonEnabled(true);
+            }
+        });
     }
 
     private void initWormholeSequence() {
