@@ -93,6 +93,8 @@ public class MainView extends View {
         int m_right;
     }
     private ArrayList<WormholeSequence> m_wormholeSequences;
+
+    private static final int m_experimentPhoneNumber = 3;
     /**
      * experiment end
      */
@@ -117,11 +119,11 @@ public class MainView extends View {
 
         setShowRemoteNames(false);
 
-
+/*
         updateRemotePhone("jojo", 0);
         updateRemotePhone("selene", 0);
         updateRemotePhone("renee", 0);
-        /*
+
         updateRemotePhone("shushu", 0);
         updateRemotePhone("jiaxin", 0);
         updateRemotePhone("baby", 0);
@@ -199,9 +201,9 @@ public class MainView extends View {
 
     public void showRemotePhones(Canvas canvas) {
         m_paint.setTextSize(50);
-        m_paint.setColor(Color.BLACK);
 
         for (RemotePhoneInfo remotePhoneInfo : m_remotePhones) {
+            m_paint.setColor(remotePhoneInfo.m_color);
             if (getShowRemoteNames()) {
                 m_paint.setStrokeWidth(2);
                 m_paint.setStyle(Paint.Style.FILL_AND_STROKE);
@@ -258,6 +260,7 @@ public class MainView extends View {
         for (int i = 0; i<size; ++i) {
             RemotePhoneInfo info = m_remotePhones.get(i);
             if (info.m_id.equalsIgnoreCase(id)) {
+                info.m_color = color;
                 isFound = true;
                 break;
             }
@@ -274,7 +277,7 @@ public class MainView extends View {
             /**
              * experiment end
              */
-            if (m_remotePhones.size() == 3) {
+            if (m_remotePhones.size() == m_experimentPhoneNumber) {
                 initExperiment();
             }
             /**
@@ -694,11 +697,14 @@ public class MainView extends View {
         WormholeSequence wormholeSequence = m_wormholeSequences.get(index);
         m_wormholeSequences.remove(index);
 
-        if (m_remotePhones.size() == 3) {
+        if (m_remotePhones.size() == m_experimentPhoneNumber) {
             m_remotePhones.get(0).m_wormholeInfo = m_wormholes.get(wormholeSequence.m_left);
             m_remotePhones.get(1).m_wormholeInfo = m_wormholes.get(wormholeSequence.m_middle);
             m_remotePhones.get(2).m_wormholeInfo = m_wormholes.get(wormholeSequence.m_right);
         }
+
+        // reset self color
+        m_color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
     }
 
     public void startBlock() {
