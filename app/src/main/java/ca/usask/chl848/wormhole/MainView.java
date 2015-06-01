@@ -23,12 +23,13 @@ public class MainView extends View {
     Paint m_paint;
 
     private String m_id;
+    private String m_name;
     private int m_color;
 
     private String m_message;
 
     public class RemotePhoneInfo {
-        String m_id;
+        String m_name;
         int m_color;
         WormholeInfo m_wormholeInfo;
     }
@@ -95,6 +96,8 @@ public class MainView extends View {
     private ArrayList<WormholeSequence> m_wormholeSequences;
 
     private static final int m_experimentPhoneNumber = 3;
+
+    private MainLogger m_logger;
     /**
      * experiment end
      */
@@ -107,7 +110,8 @@ public class MainView extends View {
         initWormholes();
         setBackgroundColor(Color.WHITE);
         m_message = "No Message";
-        m_id = ((MainActivity)(context)).getBTName();
+        m_id = ((MainActivity)(context)).getUserId();
+        m_name = ((MainActivity)(context)).getUserName();
         Random rnd = new Random();
         m_color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
 
@@ -120,9 +124,9 @@ public class MainView extends View {
         setShowRemoteNames(false);
 
 /*
-        updateRemotePhone("jojo", 0);
-        updateRemotePhone("selene", 0);
-        updateRemotePhone("renee", 0);
+        updateRemotePhone("chengzhao", Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256)));
+        updateRemotePhone("selene", Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256)));
+        updateRemotePhone("renee", Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256)));
 
         updateRemotePhone("shushu", 0);
         updateRemotePhone("jiaxin", 0);
@@ -210,10 +214,10 @@ public class MainView extends View {
 
                 float textX = remotePhoneInfo.m_wormholeInfo.m_x - remotePhoneInfo.m_wormholeInfo.m_radius;
                 float textY = remotePhoneInfo.m_wormholeInfo.m_y - remotePhoneInfo.m_wormholeInfo.m_radius * 1.5f;
-                if (remotePhoneInfo.m_id.length() > 5) {
+                if (remotePhoneInfo.m_name.length() > 5) {
                     textX = remotePhoneInfo.m_wormholeInfo.m_x - remotePhoneInfo.m_wormholeInfo.m_radius * 2.0f;
                 }
-                canvas.drawText(remotePhoneInfo.m_id, textX,  textY, m_paint);
+                canvas.drawText(remotePhoneInfo.m_name, textX,  textY, m_paint);
             }
 
             m_paint.setStrokeWidth(8);
@@ -250,8 +254,8 @@ public class MainView extends View {
         m_message = msg;
     }
 
-    public void updateRemotePhone(String id, int color){
-        if (id.equalsIgnoreCase(m_id)) {
+    public void updateRemotePhone(String name, int color){
+        if (name.equalsIgnoreCase(m_name)) {
             return;
         }
 
@@ -259,7 +263,7 @@ public class MainView extends View {
         boolean isFound = false;
         for (int i = 0; i<size; ++i) {
             RemotePhoneInfo info = m_remotePhones.get(i);
-            if (info.m_id.equalsIgnoreCase(id)) {
+            if (info.m_name.equalsIgnoreCase(name)) {
                 info.m_color = color;
                 isFound = true;
                 break;
@@ -268,7 +272,7 @@ public class MainView extends View {
 
         if (!isFound && size < m_wormhole_number) {
             RemotePhoneInfo info = new RemotePhoneInfo();
-            info.m_id = id;
+            info.m_name = name;
             info.m_color = color;
             info.m_wormholeInfo = getAvailableWormhole();
 
@@ -426,6 +430,7 @@ public class MainView extends View {
                     invalidate();
                 }
                 if (m_touchedBallId > -1) {
+                    m_numberOfDrops += 1;
                     Ball ball = m_balls.get(m_touchedBallId);
                     if (ball.m_isTouched) {
                         boolean isOverlap = false;
@@ -442,13 +447,17 @@ public class MainView extends View {
                         }
 
                         if (!isOverlap && !isBoundary(X, Y)) {
-                            String id = isSending(ball.m_ballX, ball.m_ballY);
-                            if (!ball.m_name.isEmpty() && !id.isEmpty() && id.equalsIgnoreCase(ball.m_name)){
-                                ((MainActivity)getContext()).showToast("send ball to : " + id);
-                                //sendBall(ball, id);
-                                removeBall(ball.m_id);
-                                this.invalidate();
-                                endTrail();
+                            String name = isSending(ball.m_ballX, ball.m_ballY);
+                            if (!ball.m_name.isEmpty() && !name.isEmpty()){
+                                if (name.equalsIgnoreCase(ball.m_name)) {
+                                    //((MainActivity) getContext()).showToast("send ball to : " + id);
+                                    //sendBall(ball, name);
+                                    removeBall(ball.m_id);
+                                    this.invalidate();
+                                    endTrail();
+                                } else {
+                                    m_numberOfErrors += 1;
+                                }
                             } else {
                                 ball.m_ballX = X;
                                 ball.m_ballY = Y;
@@ -494,7 +503,7 @@ public class MainView extends View {
             double dist = Math.sqrt(Math.pow((x - remotePhone.m_wormholeInfo.m_x),2) + Math.pow((y - remotePhone.m_wormholeInfo.m_y), 2));
 
             if (dist <= (m_ballRadius + remotePhone.m_wormholeInfo.m_radius)) {
-                rt = remotePhone.m_id;
+                rt = remotePhone.m_name;
                 break;
             }
         }
@@ -547,14 +556,14 @@ public class MainView extends View {
         }
     }
 
-    public void sendBall(Ball ball, String receiverId ) {
+    public void sendBall(Ball ball, String receiverName ) {
         JSONObject jo = new JSONObject();
         try {
             jo.put("ballId", ball.m_id);
             jo.put("ballColor", ball.m_ballColor);
-            jo.put("receiverId", receiverId);
+            jo.put("receiverName", receiverName);
             jo.put("isSendingBall", true);
-            jo.put("id", m_id);
+            jo.put("name", m_name);
             jo.put("color", m_color);
             jo.put("x", 0);
             jo.put("y", 0);
@@ -573,7 +582,7 @@ public class MainView extends View {
         JSONObject jo = new JSONObject();
         try {
             jo.put("isSendingBall", false);
-            jo.put("id", m_id);
+            jo.put("name", m_name);
             jo.put("color", m_color);
             jo.put("x", 0);
             jo.put("y", 0);
@@ -586,10 +595,6 @@ public class MainView extends View {
         if (ma != null) {
             ma.addMessage(jo.toString());
         }
-    }
-
-    public String getPhoneId() {
-        return m_id;
     }
 
     public void clearRemotePhoneInfo() {
@@ -612,6 +617,8 @@ public class MainView extends View {
         initWormholeSequence();
 
         resetBlock();
+
+        m_logger = new MainLogger(getContext(), m_id+"_"+m_name);
 
         ((MainActivity)getContext()).runOnUiThread(new Runnable() {
             @Override
@@ -673,6 +680,10 @@ public class MainView extends View {
         return name;
     }
 
+    public boolean isFinished() {
+        return m_currentBlock == m_maxBlocks;
+    }
+
     public void nextBlock() {
         ((MainActivity)getContext()).setStartButtonEnabled(true);
         ((MainActivity)getContext()).setContinueButtonEnabled(false);
@@ -683,7 +694,7 @@ public class MainView extends View {
         m_ballNames.clear();
         for (RemotePhoneInfo remotePhoneInfo : m_remotePhones){
             for(int i=0; i<3; i++){
-                m_ballNames.add(remotePhoneInfo.m_id);
+                m_ballNames.add(remotePhoneInfo.m_name);
             }
         }
 
@@ -705,6 +716,9 @@ public class MainView extends View {
 
         // reset self color
         m_color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+
+        m_numberOfDrops = 0;
+        m_numberOfErrors = 0;
     }
 
     public void startBlock() {
@@ -719,17 +733,27 @@ public class MainView extends View {
         if (m_currentBlock < m_maxBlocks) {
             ((MainActivity) getContext()).setContinueButtonEnabled(true);
         }
+        else {
+            m_logger.close();
+        }
+
         m_currentTrail = 0;
     }
 
     public void startTrial() {
-        addBall();
         m_trailStartTime = System.currentTimeMillis();
         m_currentTrail += 1;
+        m_numberOfErrors = 0;
+        m_numberOfDrops = 0;
+        addBall();
     }
 
     public void endTrail() {
         long timeElapse = System.currentTimeMillis() - m_trailStartTime;
+
+        // <participantID> <condition> <block#> <trial#> <elapsed time for this trial> <number of drops for this trial> <number of errors for this trial>
+
+        m_logger.write(m_id + "," + getResources().getString(R.string.app_name) + "," + m_currentBlock + "," + m_currentTrail + "," + timeElapse + "," +  m_numberOfDrops + "," + m_numberOfErrors);
 
         if (m_currentTrail < m_maxTrails) {
             startTrial();

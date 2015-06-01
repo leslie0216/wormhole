@@ -301,8 +301,12 @@ public class MainActivity extends Activity {
         }
     }
 
-    public String getBTName() {
+    public String getUserName() {
         return m_userName;
+    }
+
+    public String getUserId() {
+        return m_userId;
     }
 
     private class ConnectedThread extends Thread {
@@ -466,25 +470,25 @@ public class MainActivity extends Activity {
 
             int len = jsonArray.length();
 
-            ArrayList<String> ids = new ArrayList<>();
+            ArrayList<String> names = new ArrayList<>();
 
             for (int i=0; i<len; ++i) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
 
-                final String senderId = jsonObject.getString("id");
+                final String senderName = jsonObject.getString("name");
                 int senderColor = jsonObject.getInt("color");
                 float senderX = (float) jsonObject.getDouble("x");
                 float senderY = (float) jsonObject.getDouble("y");
                 float senderZ = (float) jsonObject.getDouble("z");
 
                 if (m_mainView != null) {
-                    m_mainView.updateRemotePhone(senderId, senderColor);
+                    m_mainView.updateRemotePhone(senderName, senderColor);
                 }
 
                 boolean isSendingBall = jsonObject.getBoolean("isSendingBall");
                 if (isSendingBall && m_mainView != null) {
-                    String receiverId = jsonObject.getString("receiverId");
-                    if (receiverId.equalsIgnoreCase(m_mainView.getPhoneId())) {
+                    String receiverName = jsonObject.getString("receiverName");
+                    if (receiverName.equalsIgnoreCase(m_userName)) {
                         String ballId = jsonObject.getString("ballId");
                         int ballColor = jsonObject.getInt("ballColor");
                         m_mainView.receivedBall(ballId, ballColor);
@@ -492,19 +496,19 @@ public class MainActivity extends Activity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                showToast("received ball from : " + senderId);
+                                showToast("received ball from : " + senderName);
                             }
                         });
                     }
                 }
 
-                ids.add(senderId);
+                names.add(senderName);
             }
 
             ArrayList<MainView.RemotePhoneInfo> remotePhoneInfos = m_mainView.getRemotePhones();
             ArrayList<MainView.RemotePhoneInfo> lostPhoneInfos = new ArrayList<>();
             for (MainView.RemotePhoneInfo phoneInfo : remotePhoneInfos) {
-                if (!ids.contains(phoneInfo.m_id)) {
+                if (!names.contains(phoneInfo.m_name)) {
                     lostPhoneInfos.add(phoneInfo);
                 }
             }
