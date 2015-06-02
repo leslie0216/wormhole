@@ -618,7 +618,7 @@ public class MainView extends View {
 
         resetBlock();
 
-        m_logger = new MainLogger(getContext(), m_id+"_"+m_name);
+        m_logger = new MainLogger(getContext(), m_id+"_"+m_name+"_"+getResources().getString(R.string.app_name));
 
         ((MainActivity)getContext()).runOnUiThread(new Runnable() {
             @Override
