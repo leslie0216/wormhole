@@ -7,6 +7,8 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -78,6 +80,18 @@ public class MainActivity extends Activity {
         }
     };
 
+    private static boolean m_isExit = false;
+
+    Handler m_exitHandler = new Handler() {
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            m_isExit = false;
+        }
+
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,7 +117,12 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 if (m_mainView != null && m_mainView.getBallCount() == 0) {
-                    m_mainView.startBlock();
+                    if (!m_mainView.isFinished()) {
+                        m_mainView.startBlock();
+                    } else {
+                        finish();
+                        System.exit(0);
+                    }
                 }
             }
         });
@@ -130,8 +149,13 @@ public class MainActivity extends Activity {
         m_continueBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (m_mainView != null && m_mainView.getBallCount() == 0)
-                    m_mainView.nextBlock();
+                if (m_mainView != null && m_mainView.getBallCount() == 0) {
+                    if (!m_mainView.isFinished()) {
+                        m_mainView.nextBlock();
+                    } else {
+                        showDoneButton();
+                    }
+                }
             }
         });
 
@@ -185,6 +209,12 @@ public class MainActivity extends Activity {
         m_continueBtn.setEnabled(enabled);
     }
 
+    public void showDoneButton() {
+        setContinueButtonEnabled(false);
+        m_startBtn.setText("Done");
+        m_startBtn.setEnabled(true);
+    }
+
     /**
      * experiment end
      */
@@ -213,6 +243,33 @@ public class MainActivity extends Activity {
     protected void onDestroy() {
         stopThreads();
         super.onDestroy();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            exit();
+            return false;
+        } else {
+            return super.onKeyDown(keyCode, event);
+        }
+    }
+
+    private void exit() {
+        if (!m_isExit) {
+            m_isExit = true;
+            Toast.makeText(getApplicationContext(), "press back key again to exit", Toast.LENGTH_SHORT).show();
+            m_exitHandler.sendEmptyMessageDelayed(0, 2000);
+        } else {
+            m_mainView.closeLogger();
+            finish();
+            System.exit(0);
+        }
     }
 
     private void stopThreads() {

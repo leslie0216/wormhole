@@ -255,7 +255,7 @@ public class MainView extends View {
     }
 
     public void updateRemotePhone(String name, int color){
-        if (name.equalsIgnoreCase(m_name)) {
+        if (name.isEmpty() || name.equalsIgnoreCase(m_name)) {
             return;
         }
 
@@ -730,13 +730,10 @@ public class MainView extends View {
     }
 
     public void endBlock() {
-        if (m_currentBlock < m_maxBlocks) {
-            ((MainActivity) getContext()).setContinueButtonEnabled(true);
-        }
-        else {
+        if (isFinished() && (m_logger != null)) {
             m_logger.close();
         }
-
+        ((MainActivity) getContext()).setContinueButtonEnabled(true);
         m_currentTrail = 0;
     }
 
@@ -753,12 +750,20 @@ public class MainView extends View {
 
         // <participantID> <condition> <block#> <trial#> <elapsed time for this trial> <number of drops for this trial> <number of errors for this trial>
 
-        m_logger.write(m_id + "," + getResources().getString(R.string.app_name) + "," + m_currentBlock + "," + m_currentTrail + "," + timeElapse + "," +  m_numberOfDrops + "," + m_numberOfErrors);
+        if (m_logger != null) {
+            m_logger.write(m_id + "," + getResources().getString(R.string.app_name) + "," + m_currentBlock + "," + m_currentTrail + "," + timeElapse + "," + m_numberOfDrops + "," + m_numberOfErrors);
+        }
 
         if (m_currentTrail < m_maxTrails) {
             startTrial();
         } else {
             endBlock();
+        }
+    }
+
+    public void closeLogger() {
+        if (m_logger != null) {
+            m_logger.close();
         }
     }
     /**

@@ -16,7 +16,7 @@ public class MainLogger {
     private BufferedWriter m_bufferedWriter;
 
     public MainLogger(Context context, String fileName) {
-        String SUFFIX = ".txt";
+        String SUFFIX = ".csv";
         String targetPath = Environment.getExternalStorageDirectory().getPath()+File.separator+fileName + SUFFIX;
         File targetFile = new File(targetPath);
         if (targetFile != null) {
