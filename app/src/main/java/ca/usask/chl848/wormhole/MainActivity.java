@@ -110,6 +110,7 @@ public class MainActivity extends Activity {
                     if (!m_mainView.isFinished()) {
                         m_mainView.startBlock();
                     } else {
+                        m_mainView.closeLogger();
                         finish();
                         System.exit(0);
                     }
