@@ -109,6 +109,8 @@ public class MainView extends View {
     private static final int m_experimentPhoneNumber = 3;
 
     private MainLogger m_logger;
+
+    private boolean m_isExperimentInitialised;
     /**
      * experiment end
      */
@@ -136,6 +138,9 @@ public class MainView extends View {
         setShowRemoteNames(false);
 
         resetCounters();
+
+        m_isExperimentInitialised = false;
+
 
 /*
         updateRemotePhone("chengzhao", Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256)));
@@ -310,7 +315,7 @@ public class MainView extends View {
             /**
              * experiment end
              */
-            if (m_remotePhones.size() == m_experimentPhoneNumber) {
+            if (m_remotePhones.size() == m_experimentPhoneNumber && !m_isExperimentInitialised) {
                 initExperiment();
             }
             /**
@@ -660,6 +665,8 @@ public class MainView extends View {
      * experiment begin
      */
     private void initExperiment() {
+        m_isExperimentInitialised = true;
+
         // init ball names
         m_ballNames = new ArrayList<>();
 
