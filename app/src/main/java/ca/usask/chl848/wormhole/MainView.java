@@ -27,7 +27,7 @@ public class MainView extends View {
     private String m_id;
     private String m_name;
     private int m_color;
-    private static final int m_messageTextSize = 50;
+    private static final int m_messageTextSize = 70;
     private static final int m_textStrokeWidth = 2;
     private static final int m_boundaryStrokeWidth = 10;
 
@@ -125,8 +125,9 @@ public class MainView extends View {
         m_message = "No Message";
         m_id = ((MainActivity)(context)).getUserId();
         m_name = ((MainActivity)(context)).getUserName();
-        Random rnd = new Random();
-        m_color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+        //Random rnd = new Random();
+        //m_color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+        m_color = ((MainActivity)(context)).getUserColor();
 
         m_touchedBallId = -1;
         m_balls = new ArrayList<>();
@@ -202,7 +203,7 @@ public class MainView extends View {
         showMessage(canvas);
         showRemotePhones(canvas);
         showBalls(canvas);
-        showProgress(canvas);
+        //showProgress(canvas);
     }
 
     public void showBoundary(Canvas canvas) {
@@ -240,7 +241,7 @@ public class MainView extends View {
                 canvas.drawText(remotePhoneInfo.m_name, textX,  textY, m_paint);
             }
 
-            m_paint.setStrokeWidth(8);
+            m_paint.setStrokeWidth(12);
             m_paint.setStyle(Paint.Style.STROKE);
             canvas.drawCircle(remotePhoneInfo.m_wormholeInfo.m_x, remotePhoneInfo.m_wormholeInfo.m_y, remotePhoneInfo.m_wormholeInfo.m_radius, m_paint);
         }
@@ -257,6 +258,7 @@ public class MainView extends View {
                  * experiment begin
                  */
                 m_paint.setStrokeWidth(m_textStrokeWidth);
+                m_paint.setTextSize(m_messageTextSize);
                 float textX = ball.m_ballX - m_ballRadius;
                 float textY = ball.m_ballY - m_ballRadius;
                 if (ball.m_name.length() > 5) {
@@ -428,7 +430,7 @@ public class MainView extends View {
                     }
 
                     if (show) {
-                        handler.postDelayed(mLongPressed, 1000);
+                        handler.postDelayed(mLongPressed, 500);
                     }
                 } else {
                     m_numberOfTouchBall++;
@@ -680,9 +682,10 @@ public class MainView extends View {
 
         resetBlock();
 
-        m_logger = new MainLogger(getContext(), m_id+"_"+m_name+"_"+getResources().getString(R.string.app_name));
+        m_logger = null;
+        //m_logger = new MainLogger(getContext(), m_id+"_"+m_name+"_"+getResources().getString(R.string.app_name));
         //<participantID> <participantName> <condition> <block#> <trial#> <receiver name> <elapsed time for this trial> <number of errors for this trial> <number of release for this trial> <number of drops for this trial> <number of touch for this trial> <number of touch ball for this trial> <number of long press for this trial> <timestamp>
-         m_logger.writeHeaders("participantID" + "," + "participantName" + "," + "condition" + "," + "block" + "," + "trial" + "," + "receiverName" + "," + "elapsedTime" + "," + "errors" + "," + "release" + "," + "drops" + "," + "touch" + "," + "touchBall" + "," + "longPress" + "," + "timestamp");
+         //m_logger.writeHeaders("participantID" + "," + "participantName" + "," + "condition" + "," + "block" + "," + "trial" + "," + "receiverName" + "," + "elapsedTime" + "," + "errors" + "," + "release" + "," + "drops" + "," + "touch" + "," + "touchBall" + "," + "longPress" + "," + "timestamp");
 
         ((MainActivity)getContext()).runOnUiThread(new Runnable() {
             @Override
@@ -780,7 +783,7 @@ public class MainView extends View {
         }
 
         // reset self color
-        m_color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+        //m_color = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
 
         resetCounters();
     }
@@ -829,7 +832,7 @@ public class MainView extends View {
 
         //<participantID> <participantName> <condition> <block#> <trial#> <receiver name> <elapsed time for this trial> <number of errors for this trial> <number of release for this trial> <number of drops for this trial> <number of touch for this trial> <number of touch ball for this trial> <number of long press for this trial> <timestamp>
         if (m_logger != null) {
-            m_logger.write(m_id + "," + m_name + "," + getResources().getString(R.string.app_name) + "," + m_currentBlock + "," + m_currentTrail + "," + m_receiverName + "," + timeElapse + "," + m_numberOfErrors + "," + m_numberOfRelease + "," + m_numberOfDrops + "," + m_numberOfTouch + "," + m_numberOfTouchBall + "," + m_numberOfLongPress + "," + trailEndTime, true);
+            //m_logger.write(m_id + "," + m_name + "," + getResources().getString(R.string.app_name) + "," + m_currentBlock + "," + m_currentTrail + "," + m_receiverName + "," + timeElapse + "," + m_numberOfErrors + "," + m_numberOfRelease + "," + m_numberOfDrops + "," + m_numberOfTouch + "," + m_numberOfTouchBall + "," + m_numberOfLongPress + "," + trailEndTime, true);
         }
 
         if (m_currentTrail < m_maxTrails) {

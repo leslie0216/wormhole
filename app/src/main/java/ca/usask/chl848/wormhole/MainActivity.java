@@ -34,6 +34,7 @@ import java.util.UUID;
 public class MainActivity extends Activity {
     private String m_userName;
     private String m_userId;
+    private int m_userColor;
     /** BT begin
      */
     private ClientThread m_clientThread = null;
@@ -89,8 +90,15 @@ public class MainActivity extends Activity {
 
         Intent intent = this.getIntent();
         Bundle bundle = intent.getExtras();
-        m_userName = bundle.getString("user");
-        m_userId = bundle.getString("id");
+        if (bundle.containsKey("user")) {
+            m_userName = bundle.getString("user");
+        }
+        if (bundle.containsKey("id")) {
+            m_userId = bundle.getString("id");
+        }
+        if (bundle.containsKey("color")) {
+            m_userColor = bundle.getInt("color");
+        }
 
         setTitle(m_userId + " : " + m_userName + " - " + getResources().getString(R.string.app_name));
 
@@ -361,6 +369,8 @@ public class MainActivity extends Activity {
     public String getUserId() {
         return m_userId;
     }
+
+    public int getUserColor() {return m_userColor;}
 
     private class ConnectedThread extends Thread {
         public ConnectedThread() {
